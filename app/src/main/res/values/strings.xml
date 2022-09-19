@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">FaceApp</string>
+    <string name="description">To add new profiles</string>
+    <string name="save_button_text">SAVE</string>
+    <string name="hint_name">Enter Your Name</string>
+    <string name="hint_phone">Enter Phone Number</string>
+    <string name="hint_address">Enter Address</string>
+</resources>
