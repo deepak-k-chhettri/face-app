@@ -29,6 +29,10 @@ class MyAdapter(val context: Context) :RecyclerView.Adapter<MyAdapter.MyViewHold
         return usersFace.size
     }
 
+    fun getUserFaceAt(position: Int):UserFace{
+        return usersFace[position]
+    }
+
     class MyViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val imageViewSmall: ImageView = itemView.findViewById(R.id.imageViewSmall)
         val imageViewLarge: ImageView = itemView.findViewById(R.id.imageViewLarge)
