@@ -62,7 +62,7 @@ class AddNewUserFace : AppCompatActivity() {
             pictureDialog.setTitle("Select an Option")
             val pictureDialogItem = arrayOf("Open Gallery","Open Camera")
             pictureDialog.setItems(pictureDialogItem){
-                dialog, which ->
+                _, which ->
                 when(which){
                     0->checkGalleryPermission()
                     1->checkCameraPermission()

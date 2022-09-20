@@ -14,6 +14,7 @@ class MyViewModel(context: Context) : ViewModel(){
     private val repository = MyRepository(dao)
 
     val readAllUsers = repository.readAllUsers
+  //  val rowCount = repository.rowCount
     fun insertFaceUser(userFace: UserFace){
         viewModelScope.launch(Dispatchers.IO){
             repository.addFaceUser(userFace)
@@ -23,6 +24,12 @@ class MyViewModel(context: Context) : ViewModel(){
     fun deleteFaceUser(userFace: UserFace){
         viewModelScope.launch(Dispatchers.IO){
             repository.deleteFaceUser(userFace)
+        }
+    }
+
+    fun deleteAllUsers(){
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.deleteAllUsers()
         }
     }
 }
