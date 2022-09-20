@@ -3,10 +3,6 @@ package com.kcdeepak.faceapp
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.View
-import android.view.View.OnClickListener
-import android.widget.Toast
-import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -19,6 +15,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var myViewModel: MyViewModel
     lateinit var recyclerView: RecyclerView
     lateinit var myAdapter: MyAdapter
+    lateinit var fabDeleteAll:FloatingActionButton
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,14 +23,15 @@ class MainActivity : AppCompatActivity() {
 
         myViewModel = MyViewModel(applicationContext)
         myAdapter = MyAdapter(this)
+        fabDeleteAll = findViewById(R.id.fabDelAll)
 
         recyclerView = findViewById(R.id.container)
         recyclerView.adapter = myAdapter
         recyclerView.layoutManager = LinearLayoutManager(this)
 
-        myViewModel.readAllUsers.observe(this, Observer {
-            it -> it?.let { myAdapter.updateList(it)}
-        })
+        myViewModel.readAllUsers.observe(this) { it ->
+            it?.let { myAdapter.updateList(it) }
+        }
 
         fab = findViewById(R.id.fab)
         fab.setOnClickListener {
@@ -61,11 +59,14 @@ class MainActivity : AppCompatActivity() {
                 Snackbar.make(recyclerView,"User Face Deleted",5000).setAction("UNDO"
                 ) {
                     myViewModel.insertFaceUser(userFace)
-                    myAdapter.notifyItemInserted(position)
+                    //myAdapter.notifyItemInserted(position)
                 }.show()
             }
 
         }).attachToRecyclerView(recyclerView)
 
+        fabDeleteAll.setOnClickListener {
+            myViewModel.deleteAllUsers()
+        }
     }
 }

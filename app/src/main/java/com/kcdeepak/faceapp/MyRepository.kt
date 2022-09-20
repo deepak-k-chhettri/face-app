@@ -16,4 +16,8 @@ class MyRepository(private val userFaceDAO: UserFaceDAO) {
     fun deleteFaceUser(userFace: UserFace){
         userFaceDAO.deleteFaceUser(userFace)
     }
+
+    suspend fun deleteAllUsers(){
+        userFaceDAO.deleteAllUsers()
+    }
 }

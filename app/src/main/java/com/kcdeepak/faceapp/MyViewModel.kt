@@ -25,4 +25,10 @@ class MyViewModel(context: Context) : ViewModel(){
             repository.deleteFaceUser(userFace)
         }
     }
+
+    fun deleteAllUsers(){
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.deleteAllUsers()
+        }
+    }
 }
