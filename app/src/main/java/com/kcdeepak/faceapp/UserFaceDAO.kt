@@ -14,10 +14,4 @@ interface UserFaceDAO {
 
     @Delete
     fun deleteFaceUser(userFace: UserFace)
-
-    @Query("delete from user_face")
-    suspend fun deleteAllUsers()
-
-//    @Query("select count(id) from user_face")
-//    fun getRowCount():LiveData<Int>
 }
