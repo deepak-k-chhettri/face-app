@@ -9,6 +9,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.lifecycle.LiveData
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 
 class MyAdapter(val context: Context) :RecyclerView.Adapter<MyAdapter.MyViewHolder>() {
     private val usersFace = ArrayList<UserFace>()
@@ -18,8 +19,12 @@ class MyAdapter(val context: Context) :RecyclerView.Adapter<MyAdapter.MyViewHold
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        holder.imageViewSmall.setImageBitmap(usersFace[position].bitmap)
-        holder.imageViewLarge.setImageBitmap(usersFace[position].bitmap)
+        Glide.with(context)
+            .load(usersFace[position].imageUri)
+            .into(holder.imageViewSmall)
+        Glide.with(context)
+            .load(usersFace[position].imageUri)
+            .into(holder.imageViewLarge)
         holder.textViewName.text = usersFace[position].name
         holder.textViewPhone.text = usersFace[position].phone
         holder.textViewAddress.text = usersFace[position].address

@@ -5,9 +5,11 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
 
 
-@TypeConverters(Converters::class)
+//@TypeConverters(Converters::class)
 @Database(entities = [UserFace::class], version = 1)
 abstract class UserFaceDatabase:RoomDatabase() {
     abstract fun userFaceDao():UserFaceDAO
@@ -25,6 +27,7 @@ abstract class UserFaceDatabase:RoomDatabase() {
         fun buildBatabase(context: Context) =
             Room.databaseBuilder(context,
                 UserFaceDatabase::class.java,
-                "face_user_database").build()
+                "face_user_database_")
+                .build()
     }
 }

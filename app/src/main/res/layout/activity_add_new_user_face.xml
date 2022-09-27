@@ -4,8 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".AddNewUserFace"
-    android:background="@drawable/activity_background">
+    tools:context=".AddNewUserFace">
 
     <androidx.cardview.widget.CardView
         android:id="@+id/imageHolderCardView"
@@ -21,8 +20,7 @@
             android:id="@+id/imageToBeAdded"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:scaleType="centerCrop"
-            android:background="@drawable/ic_image"/>
+            android:scaleType="centerCrop"/>
 
     </androidx.cardview.widget.CardView>
 
@@ -68,11 +66,13 @@
         android:paddingStart="20dp"
         android:paddingEnd="20dp"/>
 
-    <Button
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/saveButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/save_button_text"
+        android:textAllCaps="false"
+        android:background="@drawable/round_background"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/editTextAddress"
@@ -80,8 +80,8 @@
         android:backgroundTint="#F8A9C4"
         android:textColor="@color/white"
         android:textSize="24sp"
-        android:paddingStart="20dp"
-        android:paddingEnd="20dp"/>
+        android:paddingStart="40dp"
+        android:paddingEnd="40dp"/>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

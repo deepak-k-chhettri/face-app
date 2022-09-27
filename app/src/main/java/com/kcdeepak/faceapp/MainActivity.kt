@@ -3,9 +3,6 @@ package com.kcdeepak.faceapp
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.View
-import android.view.View.OnClickListener
-import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -19,23 +16,21 @@ class MainActivity : AppCompatActivity() {
     private lateinit var myViewModel: MyViewModel
     lateinit var recyclerView: RecyclerView
     lateinit var myAdapter: MyAdapter
+    lateinit var fabDelAll:FloatingActionButton
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        myViewModel = MyViewModel(applicationContext)
-        myAdapter = MyAdapter(this)
+        initialMyUI()
+    }
 
-        recyclerView = findViewById(R.id.container)
-        recyclerView.adapter = myAdapter
-        recyclerView.layoutManager = LinearLayoutManager(this)
-
+    override fun onStart() {
+        super.onStart()
         myViewModel.readAllUsers.observe(this, Observer {
-            it -> it?.let { myAdapter.updateList(it)}
+                it -> it?.let { myAdapter.updateList(it)}
         })
 
-        fab = findViewById(R.id.fab)
         fab.setOnClickListener {
             intent = Intent(this,AddNewUserFace::class.java)
             startActivity(intent)
@@ -67,5 +62,19 @@ class MainActivity : AppCompatActivity() {
 
         }).attachToRecyclerView(recyclerView)
 
+        fabDelAll.setOnClickListener {
+            myViewModel.deleteAllUsers()
+        }
+    }
+
+    private fun initialMyUI(){
+        myViewModel = MyViewModel(applicationContext)
+        myAdapter = MyAdapter(this)
+
+        recyclerView = findViewById(R.id.container)
+        recyclerView.adapter = myAdapter
+        recyclerView.layoutManager = LinearLayoutManager(this)
+        fabDelAll  = findViewById(R.id.fabDelAll)
+        fab = findViewById(R.id.fab)
     }
 }

@@ -1,6 +1,7 @@
 package com.kcdeepak.faceapp
 
 import android.graphics.Bitmap
+import android.net.Uri
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
@@ -12,5 +13,5 @@ data class UserFace(
     val name:String,
     val phone:String,
     val address:String,
-    val bitmap: Bitmap
+    val imageUri : String
 )
