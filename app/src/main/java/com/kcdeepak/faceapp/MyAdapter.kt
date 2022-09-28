@@ -1,12 +1,16 @@
 package com.kcdeepak.faceapp
 
 import android.content.Context
+import android.content.Intent
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.net.toUri
 import androidx.lifecycle.LiveData
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -20,10 +24,10 @@ class MyAdapter(val context: Context) :RecyclerView.Adapter<MyAdapter.MyViewHold
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         Glide.with(context)
-            .load(usersFace[position].imageUri)
+            .load(Uri.parse(usersFace[position].imageUri))
             .into(holder.imageViewSmall)
         Glide.with(context)
-            .load(usersFace[position].imageUri)
+            .load(Uri.parse(usersFace[position].imageUri))
             .into(holder.imageViewLarge)
         holder.textViewName.text = usersFace[position].name
         holder.textViewPhone.text = usersFace[position].phone

@@ -38,7 +38,7 @@ class AddNewUserFace : AppCompatActivity() {
     private lateinit var editTextPhone: EditText
     private lateinit var editTextAddress: EditText
 
-    private val contractForGallery = registerForActivityResult(ActivityResultContracts.GetContent()){
+    private val contractForGallery = registerForActivityResult(ActivityResultContracts.OpenDocument()){
         //imageToBeLoaded.setImageURI(it)
         Glide.with(this)
             .load(it)
@@ -61,10 +61,11 @@ class AddNewUserFace : AppCompatActivity() {
         setContentView(R.layout.activity_add_new_user_face)
 
         initialMyUI()
+
+        functionalities()
     }
 
-    override fun onStart() {
-        super.onStart()
+    fun functionalities(){
         imageToBeLoaded.setOnClickListener {
 
             val pictureDialog = AlertDialog.Builder(this)
@@ -160,7 +161,7 @@ class AddNewUserFace : AppCompatActivity() {
 //        intent.type = "image/*"
 //        startActivityForResult(intent,GALLERY_REQUEST_CODE)
 
-        contractForGallery.launch("image/*")
+        contractForGallery.launch(arrayOf("image/*"))
     }
 
     private fun checkGalleryPermission() {
@@ -218,6 +219,13 @@ class AddNewUserFace : AppCompatActivity() {
         editTextPhone = findViewById(R.id.editTextPhone)
         editTextAddress = findViewById(R.id.editTextAddress)
     }
+    private fun createImageUri():Uri?{
+        val time = SimpleDateFormat("yyyyMMdd_hhmmss").format(Date())
+        val image = File(applicationContext.filesDir,"IMG_${time}.png")
+        return FileProvider.getUriForFile(applicationContext,
+            "com.kcdeepak.faceapp.fileprovider",
+            image)
+    }
 
 //    fun convertToBase64String(bitmap: Bitmap):String{
 //        val byteBuffer = ByteBuffer.allocate(bitmap.height * bitmap.rowBytes)
@@ -225,11 +233,4 @@ class AddNewUserFace : AppCompatActivity() {
 //        val byteArray = byteBuffer.array()
 //        return encodeToString(byteArray, DEFAULT)
 //    }
-private fun createImageUri():Uri?{
-        val time = SimpleDateFormat("yyyyMMdd_hhmmss").format(Date())
-        val image = File(applicationContext.filesDir,"IMG_${time}.png")
-        return FileProvider.getUriForFile(applicationContext,
-            "com.kcdeepak.faceapp.fileprovider",
-            image)
-    }
 }

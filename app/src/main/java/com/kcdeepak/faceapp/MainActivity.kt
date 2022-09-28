@@ -3,6 +3,7 @@ package com.kcdeepak.faceapp
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -17,16 +18,21 @@ class MainActivity : AppCompatActivity() {
     lateinit var recyclerView: RecyclerView
     lateinit var myAdapter: MyAdapter
     lateinit var fabDelAll:FloatingActionButton
+    lateinit var empty:View
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         initialMyUI()
+
+        val emptyDataObserver = EmptyDataObserver(recyclerView,empty)
+        myAdapter.registerAdapterDataObserver(emptyDataObserver)
+
+        functionalities()
     }
 
-    override fun onStart() {
-        super.onStart()
+    fun functionalities(){
         myViewModel.readAllUsers.observe(this, Observer {
                 it -> it?.let { myAdapter.updateList(it)}
         })
@@ -76,5 +82,6 @@ class MainActivity : AppCompatActivity() {
         recyclerView.layoutManager = LinearLayoutManager(this)
         fabDelAll  = findViewById(R.id.fabDelAll)
         fab = findViewById(R.id.fab)
+        empty = findViewById(R.id.empty_data_parent)
     }
 }
