@@ -3,6 +3,7 @@ package com.kcdeepak.faceapp
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -19,10 +20,20 @@ class MainActivity : AppCompatActivity() {
     lateinit var myAdapter: MyAdapter
     lateinit var fabDelAll:FloatingActionButton
     lateinit var empty:View
+    lateinit var encryptDecrypt: EncryptDecrypt
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+//        encryptDecrypt = EncryptDecrypt.getInstance()
+//
+//        val plainText = "Android"
+//        val cipherText = encryptDecrypt.encrypt(plainText.toByteArray())
+//        Log.d("MainActivity", String(cipherText))
+//
+//        val decryptedText = encryptDecrypt.decrypt(cipherText)
+//        Log.d("MainActivity", String(decryptedText))
 
         initialMyUI()
 

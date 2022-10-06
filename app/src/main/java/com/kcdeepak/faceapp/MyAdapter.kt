@@ -1,19 +1,17 @@
 package com.kcdeepak.faceapp
 
 import android.content.Context
-import android.content.Intent
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.net.Uri
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.core.net.toUri
-import androidx.lifecycle.LiveData
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import java.util.Base64.getDecoder
+
 
 class MyAdapter(val context: Context) :RecyclerView.Adapter<MyAdapter.MyViewHolder>() {
     private val usersFace = ArrayList<UserFace>()
@@ -23,15 +21,19 @@ class MyAdapter(val context: Context) :RecyclerView.Adapter<MyAdapter.MyViewHold
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
+        val name = EncryptDecrypt().decrypt(usersFace[position].name,usersFace[position].nameIV)
+        val phone = EncryptDecrypt().decrypt(usersFace[position].phone,usersFace[position].phoneIV)
+        val address = EncryptDecrypt().decrypt(usersFace[position].address,usersFace[position].addressIV)
+        val imageUri = EncryptDecrypt().decrypt(usersFace[position].imageUri,usersFace[position].imageUriIV)
         Glide.with(context)
-            .load(Uri.parse(usersFace[position].imageUri))
+            .load(Uri.parse(String(imageUri)))
             .into(holder.imageViewSmall)
         Glide.with(context)
-            .load(Uri.parse(usersFace[position].imageUri))
+            .load(Uri.parse(String(imageUri)))
             .into(holder.imageViewLarge)
-        holder.textViewName.text = usersFace[position].name
-        holder.textViewPhone.text = usersFace[position].phone
-        holder.textViewAddress.text = usersFace[position].address
+        holder.textViewName.text = String(name)
+        holder.textViewPhone.text = String(phone)
+        holder.textViewAddress.text = String(address)
     }
 
     override fun getItemCount(): Int {
@@ -55,4 +57,8 @@ class MyAdapter(val context: Context) :RecyclerView.Adapter<MyAdapter.MyViewHold
         usersFace.addAll(newList)
         notifyDataSetChanged()
     }
+
+//    private fun cipherTextByteArrayFromBase64String(base64String: String):ByteArray{
+//        return getDecoder().decode(base64String)
+//    }
 }

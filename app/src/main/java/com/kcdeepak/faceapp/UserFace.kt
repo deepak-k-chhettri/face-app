@@ -10,8 +10,12 @@ import androidx.room.PrimaryKey
 data class UserFace(
     @PrimaryKey(autoGenerate = true)
     val id:Int = 0,
-    val name:String,
-    val phone:String,
-    val address:String,
-    val imageUri : String
+    val name:ByteArray,
+    val nameIV:ByteArray,
+    val phone:ByteArray,
+    val phoneIV: ByteArray,
+    val address:ByteArray,
+    val addressIV: ByteArray,
+    val imageUri : ByteArray,
+    val imageUriIV: ByteArray
 )

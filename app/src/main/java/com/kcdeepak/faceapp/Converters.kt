@@ -2,40 +2,30 @@ package com.kcdeepak.faceapp
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.net.Uri
-import android.util.Base64
 import android.util.Base64.*
-import android.util.Log
 import androidx.room.TypeConverter
-import java.io.ByteArrayOutputStream
+import java.nio.ByteBuffer
+import java.util.Base64
 
-class Converters {
-//    @TypeConverter
-//    fun fromBitmap(bitmap: Bitmap):ByteArray{
-//        val byteArrayOutputStream = ByteArrayOutputStream()
-//        bitmap.compress(Bitmap.CompressFormat.PNG,100,byteArrayOutputStream)
-//        Log.d("TAG", "fromBitmap: ${byteArrayOutputStream.toByteArray().size}")
-//        return byteArrayOutputStream.toByteArray()
-//    }
-//
-//    @TypeConverter
-//    fun toBitmap(byteArray: ByteArray):Bitmap{
-//        Log.d("TAG", "toBitmap: ${BitmapFactory.decodeByteArray(byteArray,0,byteArray.size)}")
-//        return BitmapFactory.decodeByteArray(byteArray,0,byteArray.size)
-//    }
-////    @TypeConverter
-////    fun base64StringToBitmap(base64String: String):Bitmap{
-////        val byteArray = decode(base64String, DEFAULT)
-////        return BitmapFactory.decodeByteArray(byteArray,0,byteArray.size)
-////    }
 
+class Converters{
     @TypeConverter
-    fun fromUriToString(imageUri: Uri):String{
-        return imageUri.toString()
+    fun bitmapToBase64(bitmap: Bitmap) : String{
+        // create a ByteBuffer and allocate size equal to bytes in the bitmap
+        val byteBuffer = ByteBuffer.allocate(bitmap.height * bitmap.rowBytes)
+        //copy all the pixels from bitmap to byteBuffer
+        bitmap.copyPixelsToBuffer(byteBuffer)
+        //convert byte buffer into byteArray
+        val byteArray = byteBuffer.array()
+        //convert byteArray to Base64 String with default flags
+        return encodeToString(byteArray, DEFAULT)
     }
 
     @TypeConverter
-    fun fromStringToUri(string: String):Uri{
-        return Uri.parse(string)
+    fun base64ToBitmap(base64String: String):Bitmap{
+        //convert Base64 String into byteArray
+        val byteArray = decode(base64String, DEFAULT)
+        //byteArray to Bitmap
+        return BitmapFactory.decodeByteArray(byteArray,0,byteArray.size)
     }
 }

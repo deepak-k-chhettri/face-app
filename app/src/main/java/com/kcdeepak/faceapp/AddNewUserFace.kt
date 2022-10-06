@@ -2,9 +2,12 @@ package com.kcdeepak.faceapp
 
 import android.Manifest
 import android.content.ActivityNotFoundException
+import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
+import android.provider.MediaStore.Images
 import android.provider.Settings
 import android.util.Log
 import android.widget.Button
@@ -27,6 +30,7 @@ import com.karumi.dexter.listener.single.PermissionListener
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
+import javax.crypto.BadPaddingException
 
 
 class AddNewUserFace : AppCompatActivity() {
@@ -37,14 +41,17 @@ class AddNewUserFace : AppCompatActivity() {
     private lateinit var editTextName:EditText
     private lateinit var editTextPhone: EditText
     private lateinit var editTextAddress: EditText
+    private var bitmap:Bitmap?=null
 
-    private val contractForGallery = registerForActivityResult(ActivityResultContracts.OpenDocument()){
+    private val contractForGallery = registerForActivityResult(ActivityResultContracts.OpenDocument()) {
         //imageToBeLoaded.setImageURI(it)
+        bitmap = Images.Media.getBitmap(contentResolver, it)
+
+        imageUri = getImageUriFromBitmap(applicationContext,bitmap!!)
         Glide.with(this)
-            .load(it)
+            .load(imageUri)
             .into(imageToBeLoaded)
         Log.d("ImageUriToString", imageUri.toString())
-        imageUri = it
     }
 
     private val contractForCamera = registerForActivityResult(ActivityResultContracts.TakePicture()){
@@ -61,11 +68,10 @@ class AddNewUserFace : AppCompatActivity() {
         setContentView(R.layout.activity_add_new_user_face)
 
         initialMyUI()
-
-        functionalities()
     }
 
-    fun functionalities(){
+    override fun onResume() {
+        super.onResume()
         imageToBeLoaded.setOnClickListener {
 
             val pictureDialog = AlertDialog.Builder(this)
@@ -85,14 +91,41 @@ class AddNewUserFace : AppCompatActivity() {
             //val base64String = convertToBase64String(bitmap as Bitmap)
             if(editTextName.text.toString().isNotEmpty() && editTextAddress.text.toString().isNotEmpty()
                 && editTextPhone.text.toString().isNotEmpty() && imageUri!=null){
+                val encryptDecryptName = EncryptDecrypt()
+                val name = encryptDecryptName.encrypt(editTextName.text.toString().toByteArray())
+                val nameIV = encryptDecryptName.encryptCipher.iv
+                val encryptDecryptPhone = EncryptDecrypt()
+                val phone = encryptDecryptPhone.encrypt(editTextPhone.text.toString().toByteArray())
+                val phoneIV = encryptDecryptPhone.encryptCipher.iv
+                val encryptDecryptAddress = EncryptDecrypt()
+                val address = encryptDecryptAddress.encrypt(editTextAddress.text.toString().toByteArray())
+                val addressIV = encryptDecryptAddress.encryptCipher.iv
+                val encryptDecryptImageUri = EncryptDecrypt()
+                val uri = encryptDecryptImageUri.encrypt(imageUri.toString().toByteArray())
+                val imageUriIV = encryptDecryptImageUri.encryptCipher.iv
                 val userFace =
-                    UserFace(0,
-                        editTextName.text.toString(),
-                        editTextPhone.text.toString(),
-                        editTextAddress.text.toString(),
-                        imageUri.toString())
+                    UserFace(
+                        0,
+                        name,
+                        nameIV,
+                        phone,
+                        phoneIV,
+                        address,
+                        addressIV,
+                        uri,
+                        imageUriIV
+                    )
                 myViewModel.insertFaceUser(userFace)
+                try {
+                    val encryptDecrypt = EncryptDecrypt()
+                    val cipherText = encryptDecrypt.encrypt(editTextName.text.toString().toByteArray())
+                    Log.d("Encrypt", "$cipherText")
 
+                    val plainText = String(encryptDecrypt.decrypt(cipherText,encryptDecrypt.encryptCipher.iv))
+                    Log.d("Decrypt", "$plainText")
+                }catch (e:BadPaddingException){
+                    e.printStackTrace()
+                }
                 intent = Intent(this,MainActivity::class.java)
                 startActivity(intent)
                 finish()
@@ -103,7 +136,6 @@ class AddNewUserFace : AppCompatActivity() {
 
         }
     }
-
     private fun checkCameraPermission() {
         Dexter.withContext(this)
             .withPermissions(Manifest.permission.CAMERA,Manifest.permission.READ_EXTERNAL_STORAGE)
@@ -159,7 +191,7 @@ class AddNewUserFace : AppCompatActivity() {
     private fun gallery() {
 //        intent = Intent(Intent.ACTION_PICK)
 //        intent.type = "image/*"
-//        startActivityForResult(intent,GALLERY_REQUEST_CODE)
+//        startActivityForResult(intent,0)
 
         contractForGallery.launch(arrayOf("image/*"))
     }
@@ -190,17 +222,11 @@ class AddNewUserFace : AppCompatActivity() {
 //    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
 //        super.onActivityResult(requestCode, resultCode, data)
 //        if(resultCode == RESULT_OK){
-//            when(requestCode){
-//                CAMERA_REQUEST_CODE ->{
-//                    bitmap = data?.extras?.get("data") as Bitmap
-//                    imageToBeLoaded.setImageBitmap(bitmap)
-//                }
-//                GALLERY_REQUEST_CODE ->{
-//                    data!!.data.also { imageUri = it }
-//                    Log.d("ImageUriToString", "onActivityResult: ${imageUri.toString()}")
-//                    bitmap = MediaStore.Images.Media.getBitmap(contentResolver,imageUri)
-//                    imageToBeLoaded.setImageBitmap(bitmap)
-//                }
+//            if(requestCode==0) {
+//                data!!.data.also { imageUri = it }
+//                Log.d("ImageUriToString", "onActivityResult: ${imageUri.toString()}")
+//                val bitmap = MediaStore.Images.Media.getBitmap(contentResolver, imageUri)
+//                imageToBeLoaded.setImageBitmap(bitmap)
 //            }
 //        }
 //    }
@@ -219,12 +245,20 @@ class AddNewUserFace : AppCompatActivity() {
         editTextPhone = findViewById(R.id.editTextPhone)
         editTextAddress = findViewById(R.id.editTextAddress)
     }
-    private fun createImageUri():Uri?{
+    private fun createImageUri():Uri? {
         val time = SimpleDateFormat("yyyyMMdd_hhmmss").format(Date())
-        val image = File(applicationContext.filesDir,"IMG_${time}.png")
+        val image = File(applicationContext.filesDir, "IMG_${time}.png")
         return FileProvider.getUriForFile(applicationContext,
             "com.kcdeepak.faceapp.fileprovider",
             image)
+    }
+
+
+    private fun getImageUriFromBitmap(context: Context,bitmap: Bitmap):Uri{
+//        val byteArrayOutputStream = ByteArrayOutputStream()
+//        bitmap.compress(Bitmap.CompressFormat.JPEG,100,byteArrayOutputStream)
+        val filePath = Images.Media.insertImage(context.contentResolver,bitmap,"File",null)
+        return Uri.parse(filePath.toString())
     }
 
 //    fun convertToBase64String(bitmap: Bitmap):String{
@@ -232,5 +266,9 @@ class AddNewUserFace : AppCompatActivity() {
 //        bitmap.copyPixelsToBuffer(byteBuffer)
 //        val byteArray = byteBuffer.array()
 //        return encodeToString(byteArray, DEFAULT)
+//    }
+
+//    private fun base64StringFromCipherText(cipherText:ByteArray):String{
+//        return Base64.getEncoder().encodeToString(cipherText)
 //    }
 }
