@@ -12,6 +12,29 @@ import javax.crypto.SecretKey
 import javax.crypto.spec.IvParameterSpec
 
 class EncryptDecrypt {
+    private val keyStore = KeyStore.getInstance("AndroidKeyStore").apply {
+        load(null)
+    }
+
+    fun getKey():SecretKey{
+        val existingKey = keyStore.getEntry("secret",null) as? SecretKeyEntry
+        return existingKey?.secretKey ?: createKey()
+    }
+
+    fun createKey():SecretKey{
+        return KeyGenerator.getInstance(ALGORITHM).apply {
+            init(
+                KeyGenParameterSpec.Builder("secret",
+                    KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT)
+                    .setBlockModes(BLOCK_MODE)
+                    .setEncryptionPaddings(PADDING)
+                    .setUserAuthenticationRequired(false)
+                    .setRandomizedEncryptionRequired(true)
+                    .build()
+            )
+        }.generateKey()
+    }
+
      val encryptCipher = Cipher.getInstance(TRANSFORMATION).apply {
         init(Cipher.ENCRYPT_MODE,getKey())
     }
@@ -36,41 +59,10 @@ class EncryptDecrypt {
         return encryptedCipher
     }
 
-    fun toBase64String(cipherText:ByteArray):String{
-        return java.util.Base64.getEncoder().withoutPadding().encodeToString(cipherText)
-    }
-
-    fun fromBase64String(base64String: String):ByteArray{
-        return java.util.Base64.getDecoder().decode(base64String)
-    }
-
     companion object{
         const val ALGORITHM = KeyProperties.KEY_ALGORITHM_AES
         const val BLOCK_MODE = KeyProperties.BLOCK_MODE_CBC
         const val PADDING = KeyProperties.ENCRYPTION_PADDING_PKCS7
         const val TRANSFORMATION = "$ALGORITHM/$BLOCK_MODE/$PADDING"
-
-        private val keyStore = KeyStore.getInstance("AndroidKeyStore").apply {
-            load(null)
-        }
-
-        fun getKey():SecretKey{
-            val existingKey = keyStore.getEntry("secret",null) as? SecretKeyEntry
-            return existingKey?.secretKey ?: createKey()
-        }
-
-         fun createKey():SecretKey{
-            return KeyGenerator.getInstance(ALGORITHM).apply {
-                init(
-                    KeyGenParameterSpec.Builder("secret",
-                        KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT)
-                        .setBlockModes(BLOCK_MODE)
-                        .setEncryptionPaddings(PADDING)
-                        .setUserAuthenticationRequired(false)
-                        .setRandomizedEncryptionRequired(true)
-                        .build()
-                )
-            }.generateKey()
-        }
     }
 }

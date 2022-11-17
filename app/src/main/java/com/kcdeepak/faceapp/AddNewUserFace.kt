@@ -94,15 +94,19 @@ class AddNewUserFace : AppCompatActivity() {
                 val encryptDecryptName = EncryptDecrypt()
                 val name = encryptDecryptName.encrypt(editTextName.text.toString().toByteArray())
                 val nameIV = encryptDecryptName.encryptCipher.iv
+                /*-------------------------------------------------------------*/
                 val encryptDecryptPhone = EncryptDecrypt()
                 val phone = encryptDecryptPhone.encrypt(editTextPhone.text.toString().toByteArray())
                 val phoneIV = encryptDecryptPhone.encryptCipher.iv
+                /*-------------------------------------------------------------*/
                 val encryptDecryptAddress = EncryptDecrypt()
                 val address = encryptDecryptAddress.encrypt(editTextAddress.text.toString().toByteArray())
                 val addressIV = encryptDecryptAddress.encryptCipher.iv
+                /*-------------------------------------------------------------*/
                 val encryptDecryptImageUri = EncryptDecrypt()
                 val uri = encryptDecryptImageUri.encrypt(imageUri.toString().toByteArray())
                 val imageUriIV = encryptDecryptImageUri.encryptCipher.iv
+
                 val userFace =
                     UserFace(
                         0,
